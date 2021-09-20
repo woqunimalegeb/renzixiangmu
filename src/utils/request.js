@@ -1,6 +1,8 @@
 import axios from 'axios'
 // 创建了一个axios实例
-const service = axios.create()
+const service = axios.create({
+  baseURL: process.env.VUE_APP_BASE_API
+})
 
 // 请求拦截器
 service.interceptors.request.use()
