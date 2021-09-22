@@ -2,7 +2,7 @@ import request from '@/utils/request'
 
 export function login(data) {
   return request({
-    URL: 'http//localhost:8888/api/sys/login',
+    url: '/sys/login',
     method: 'POST',
     data
   })

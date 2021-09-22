@@ -39,10 +39,7 @@ module.exports = {
     },
     proxy: {
       '/api': {
-        target: 'http//liufusong.top:3000',
-        pathRewrite: {
-          '^/api': '/apis'
-        }
+        target: 'http://liufusong.top:3000'
       }
     }
     // before: require('./mock/mock-server.js')

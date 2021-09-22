@@ -63,7 +63,7 @@
 
 <script>
 import { validMobile } from '@/utils/validate'
-import { login } from '@/api/user.js'
+import { mapActions } from 'vuex'
 export default {
   name: 'Login',
   data() {
@@ -101,6 +101,7 @@ export default {
     }
   },
   methods: {
+    ...mapActions(['user/login']),
     showPwd() {
       if (this.passwordType === 'password') {
         this.passwordType = ''
@@ -112,9 +113,15 @@ export default {
       })
     },
     handleLogin() {
-      this.$refs.loginForm.validate(valid => {
+      this.$refs.loginForm.validate(async valid => {
         if (!valid) return
-        login(this.loginForm)
+        try {
+          this.loading = true
+          await this['user/login'](this.loginForm)
+          this.$router.push('/')
+        } finally {
+          this.loading = false
+        }
       })
     }
   }
