@@ -12,8 +12,8 @@
       <el-dropdown class="avatar-container" trigger="click">
         <!--头像和三角图标-->
         <div class="avatar-wrapper">
-          <img src="@/assets/common/bigUserHeader.png" class="user-avatar">
-          <span>窝室嫩叠</span>
+          <img v-imgError="defaultImg" :src="avatar" class="user-avatar">
+          <span>{{ username }}</span>
           <i class="el-icon-arrow-down" />
         </div>
         <!--下拉菜单-->
@@ -34,27 +34,34 @@
 
 <script>
 import { mapGetters } from 'vuex'
-
+import defaultImg from '@/assets/common/bigUserHeader.png'
 import Hamburger from '@/components/Hamburger'
-
+import {} from '@/directives/index'
 export default {
   components: {
 
     Hamburger
   },
+  data() {
+    return {
+      defaultImg
+    }
+  },
   computed: {
     ...mapGetters([
       'sidebar',
-      'avatar'
+      'avatar',
+      'username'
+      // 'username'
     ])
   },
   methods: {
     toggleSideBar() {
       this.$store.dispatch('app/toggleSideBar')
     },
-    async logout() {
-      await this.$store.dispatch('user/logout')
-      this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+    logout() {
+      this.$store.commit('user/logout')
+      this.$router.push('/login')
     }
   }
 }
