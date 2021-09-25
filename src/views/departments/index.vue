@@ -15,13 +15,25 @@
     </div>
   </div>
 </template>
-
 <script>
 export default {
-  name: 'Departments'
+  name: 'Departments',
+  data() {
+    return {
+
+    }
+  },
+
+  created() {
+
+  },
+
+  methods: {
+
+  }
 }
 </script>
 
-<style lang="scss" scoped>
+<style scoped lang='scss'>
 
 </style>
