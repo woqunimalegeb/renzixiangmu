@@ -115,3 +115,26 @@ export function param2Obj(url) {
   })
   return obj
 }
+
+// 处理数据 列表数据 >= 树形数据
+export function transListToTree(val, list) {
+  // 准备空数组
+  const arr = []
+  // 循环数据
+  list.forEach(item => {
+    // 匹配子节点
+    // 第一次会找到一级子节点
+    if (item.pid === val) {
+      // 一级字节点的子节点
+      const childrenArr = transListToTree(item.id, list)
+      // 如果找到的子节点有
+      if (childrenArr.length) {
+        item.children = childrenArr
+      }
+      arr.push(item)
+    }
+  })
+
+  // 返回数据
+  return arr
+}

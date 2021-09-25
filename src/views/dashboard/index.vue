@@ -1,27 +1,31 @@
+
 <template>
   <div class="dashboard-container">
-    <div class="app-container">
-      <el-card class="box-card">
-        <el-row>
-          <el-col :span="12">
-            <span class="companyTit">江苏传智播客教育科技股份有限公司</span>
-          </el-col>
-          <el-col :span="12">
-            <span>负责人</span>
-            <span>操作</span>
-          </el-col>
-        </el-row>
-      </el-card>
-    </div>
+    <div class="dashboard-text">name: {{ username }}</div>
   </div>
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+
 export default {
-  name: 'Departments'
+  name: 'Dashboard',
+  computed: {
+    ...mapGetters([
+      'username'
+    ])
+  }
 }
 </script>
 
 <style lang="scss" scoped>
-
+.dashboard {
+  &-container {
+    margin: 30px;
+  }
+  &-text {
+    font-size: 30px;
+    line-height: 46px;
+  }
+}
 </style>
