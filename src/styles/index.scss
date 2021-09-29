@@ -11,6 +11,9 @@ body {
   text-rendering: optimizeLegibility;
   font-family: Helvetica Neue, Helvetica, PingFang SC, Hiragino Sans GB, Microsoft YaHei, Arial, sans-serif;
 }
+.el-table{
+  margin: 15px 0;
+}
 #nprogress .bar{
   background-color: black !important;
 }
