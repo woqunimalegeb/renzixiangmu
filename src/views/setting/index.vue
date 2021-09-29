@@ -149,9 +149,11 @@ export default {
           await updateRole(this.form)
         } else {
           await addRole(this.form)
+          console.log(this.form)
         }
         this.editVisible = false
         this.$message.success('更新成功')
+
         this.loadRoleList()
       } catch (err) {
         console.log(err)

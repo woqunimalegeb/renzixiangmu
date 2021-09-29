@@ -6,3 +6,11 @@ export const getEmployeesSimpleList = () => {
     method: 'GET'
   })
 }
+
+export const getEmployeesList = (params) => {
+  return request({
+    url: '/sys/user',
+    method: 'GET',
+    params
+  })
+}
