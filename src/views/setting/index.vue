@@ -48,7 +48,25 @@
             />
           </el-tab-pane>
 
-          <el-tab-pane label="公司信息" name="info">公司信息</el-tab-pane>
+          <el-tab-pane label="公司信息" name="info">
+            <el-form label-width="80px" :model="formLabelAlign">
+              <el-form-item label="企业名称">
+                <el-input v-model="formLabelAlign.name" :disabled="true" />
+              </el-form-item>
+              <el-form-item label="公司地址">
+                <el-input v-model="formLabelAlign.companyAddress" :disabled="true" />
+              </el-form-item>
+              <el-form-item label="公司电话">
+                <el-input v-model="formLabelAlign.companyPhone" :disabled="true" />
+              </el-form-item>
+              <el-form-item label="邮箱">
+                <el-input v-model="formLabelAlign.mailbox" :disabled="true" />
+              </el-form-item>
+              <el-form-item label="备注">
+                <el-input v-model="formLabelAlign.remarks" :disabled="true" />
+              </el-form-item>
+            </el-form>
+          </el-tab-pane>
         </el-tabs>
       </el-card>
     </div>
@@ -76,13 +94,20 @@
 </template>
 
 <script>
-import { delRole, getRoleById, getRoleList, updateRole, addRole } from '@/api/company.js'
+import { delRole, getRoleById, getRoleList, updateRole, addRole, companyDetail } from '@/api/company.js'
 export default {
   name: 'Settings',
   data() {
     return {
       activeName: 'role',
       roles: [],
+      formLabelAlign: {
+        name: '',
+        companyAddress: '',
+        companyPhone: '',
+        mailbox: '',
+        remarks: ''
+      },
       page: {
         page: 1,
         pageSize: 10
@@ -113,6 +138,7 @@ export default {
 
   created() {
     this.loadRoleList()
+    this.onCompanyInfo()
   },
   methods: {
     async loadRoleList() {
@@ -165,6 +191,11 @@ export default {
         name: '',
         description: ''
       }
+    },
+    async onCompanyInfo() {
+      const res = await companyDetail()
+      console.log(res)
+      this.formLabelAlign = res[0]
     }
   }
 

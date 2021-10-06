@@ -37,3 +37,10 @@ export function addRole(data) {
     data
   })
 }
+
+export function companyDetail() {
+  return request({
+    url: '/company',
+    method: 'GET'
+  })
+}
