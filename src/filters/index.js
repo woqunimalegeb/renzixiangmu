@@ -1,7 +1,7 @@
 import employees from '@/api/constant/employees.js'
 
 export const formatHireType = (val) => {
-  return employees.hireType.find(item => item.id === val).value
+  return val ? employees.hireType.find(item => item.id === (val - 0)).value : '暂未设置'
 }
 export const formatDate = (val, str = '-') => {
   const timeObj = new Date(val)

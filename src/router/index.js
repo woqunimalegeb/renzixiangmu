@@ -13,7 +13,7 @@ import attendancesRouter from '../store/modules/attendances'
 import salarysRouter from '../store/modules/salarys'
 import settingRouter from '../store/modules/setting'
 import socialRouter from '../store/modules/social'
-
+import employeesImport from '../store/modules/import'
 // 静态路由
 export const constantRoutes = [
   {
@@ -53,7 +53,8 @@ const varRoutes = [
   attendancesRouter,
   salarysRouter,
   settingRouter,
-  socialRouter
+  socialRouter,
+  employeesImport
 ]
 // 可以创建路由实例
 const createRouter = () => new Router({
