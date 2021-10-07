@@ -37,3 +37,27 @@ export function importEmployees(data) {
     data
   })
 }
+
+export function getEmployeesInfo(id) {
+  return request({
+    url: '/sys/user/' + id,
+    method: 'GET'
+
+  })
+}
+
+export function UpdateEmployeesInfo(data) {
+  return request({
+    url: '/sys/user/' + data.id,
+    method: 'PUT',
+    data
+  })
+}
+
+export function getEmployeesDetail(id) {
+  return request({
+    url: '/employees/' + id + '/personalInfo',
+    method: 'GET'
+
+  })
+}

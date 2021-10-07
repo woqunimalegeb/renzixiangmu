@@ -1,6 +1,6 @@
 import Layout from '@/layout'
 export default {
-  path: '/employees/import',
+  path: '/import',
   component: Layout,
   name: 'import',
   children: [
