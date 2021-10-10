@@ -16,11 +16,10 @@
 
 <script>
 import XLSX from 'xlsx'
-
 export default {
   props: {
     beforeUpload: Function, // eslint-disable-line
-    onSuccess: Function // eslint-disable-line
+    onSuccess: Function// eslint-disable-line
   },
   data() {
     return {
@@ -47,11 +46,8 @@ export default {
         return
       }
       const rawFile = files[0] // only use files[0]
-
       if (!this.isExcel(rawFile)) {
-        this.$message.error(
-          'Only supports upload .xlsx, .xls, .csv suffix files'
-        )
+        this.$message.error('Only supports upload .xlsx, .xls, .csv suffix files')
         return false
       }
       this.upload(rawFile)
@@ -74,7 +70,6 @@ export default {
     },
     upload(rawFile) {
       this.$refs['excel-upload-input'].value = null // fix can't select the same excel
-
       if (!this.beforeUpload) {
         this.readerData(rawFile)
         return
@@ -108,8 +103,7 @@ export default {
       let C
       const R = range.s.r
       /* start in the first row */
-      for (C = range.s.c; C <= range.e.c; ++C) {
-        /* walk every column in the range */
+      for (C = range.s.c; C <= range.e.c; ++C) { /* walk every column in the range */
         const cell = sheet[XLSX.utils.encode_cell({ c: C, r: R })]
         /* find the cell in the first row */
         let hdr = 'UNKNOWN ' + C // <-- replace with your desired default

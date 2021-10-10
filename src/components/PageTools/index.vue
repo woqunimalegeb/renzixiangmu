@@ -3,18 +3,16 @@
     <el-row type="flex" justify="space-between" align="middle">
       <el-col>
         <div v-if="showBefore" class="before">
-          <slot name="icon">
-            <i class="el-icon-info" />
-          </slot>
+          <slot name="icon"> <i class="el-icon-info" /></slot>
 
           <!-- 定义前面得插槽 -->
-          <slot name="before" />
+          <slot name="before">标题</slot>
         </div>
       </el-col>
       <el-col>
         <el-row type="flex" justify="end">
           <!-- 定义后面的插槽 -->
-          <slot name="after" />
+          <slot name="after"> yoo</slot>
         </el-row>
       </el-col>
     </el-row>
@@ -23,7 +21,6 @@
 
 <script>
 export default {
-  name: 'PageTools',
   props: {
     showBefore: {
       type: Boolean,
@@ -46,7 +43,7 @@ export default {
 }
 </script>
 
-<style scoped lang='scss'>
+<style scoped lang="scss">
  .page-tools {
     margin: 10px 0;
     .before {
@@ -63,4 +60,3 @@ export default {
   }
  }
 </style>
-

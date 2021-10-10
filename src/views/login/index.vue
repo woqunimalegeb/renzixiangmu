@@ -2,6 +2,7 @@
   <div class="login-container">
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left">
 
+      <!-- 放置标题图片 @是设置的别名-->
       <div class="title-container">
         <h3 class="title">
           <img src="@/assets/common/login-logo.png" alt="">
@@ -43,18 +44,12 @@
         </span>
       </el-form-item>
 
-      <el-button
-        class="loginBtn"
-        :loading="loading"
-        type="primary"
-        style="width:100%;margin-bottom:30px;"
-        @click.native.prevent="handleLogin"
-      >登录</el-button>
+      <el-button class="loginBtn" :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">登录</el-button>
 
       <div class="tips">
-        <span>还没有账号？立即注册</span>
-        <span>账号: 1380000000(1-9)</span>
-        <span>密码: 123456</span>
+        <span>还没有账号立即注册？</span>
+        <span> 账号：1380000000(2-4)</span>
+        <span> 密码: 123456</span>
       </div>
 
     </el-form>
@@ -62,30 +57,33 @@
 </template>
 
 <script>
-import { validMobile } from '@/utils/validate'
+// 拿到在vuex里面发起的登录请求
 import { mapActions } from 'vuex'
+// 引入封装的手机号正则
+import { validMobile } from '@/utils/validate'
+
 export default {
   name: 'Login',
   data() {
-    // 手机的自定义校验
-    const validateMobile = (rule, value, callback) => {
-      validMobile(value) ? callback() : callback(new Error('手机号格式不对'))
+    // 利用函数来校验表单规则
+    const validdataMobile = (rule, value, callback) => {
+      // 调用正则方法校验手机号
+      validMobile(value) ? callback() : callback(new Error('手机号格式错误'))
     }
     return {
+      // 表单数据
       loginForm: {
         mobile: '13800000002',
         password: '123456'
       },
-      // 表单的校验规则
+      // 表单规则
       loginRules: {
-        mobile: [
-          { required: true, trigger: 'blur', message: '手机号不能为空' },
-          { validator: validateMobile, trigger: 'blur' }
-        ],
-        password: [
-          { required: true, trigger: 'blur', message: '密码不能为空' },
-          { min: 6, max: 16, message: '密码格式需要在6-16位', trigger: 'blur' }
-        ]
+        // 验证手机号规则
+        mobile: [{ required: true, trigger: 'blur', message: '请输入手机号' },
+          { validator: validdataMobile, trigger: 'blur' }],
+        // 验证密码规则
+        password: [{ required: true, trigger: 'blur', message: '请输入密码' },
+          { min: 6, max: 16, message: '请输入正确密码位数', trigger: 'blur' }]
       },
       loading: false,
       passwordType: 'password',
@@ -101,7 +99,8 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['user/login']),
+    // 调用vuex/user里的方法
+    ...mapActions(['user/Login']),
     showPwd() {
       if (this.passwordType === 'password') {
         this.passwordType = ''
@@ -112,14 +111,19 @@ export default {
         this.$refs.password.focus()
       })
     },
+    // 发起登录请求
     handleLogin() {
       this.$refs.loginForm.validate(async valid => {
         if (!valid) return
+        // 调用登录方法传参
         try {
+          // 发送请求之前开启loding
           this.loading = true
-          await this['user/login'](this.loginForm)
+          await this['user/Login'](this.loginForm)
+          // 登录成功跳转页面
           this.$router.push('/')
         } finally {
+          // 不管成功或失败关闭loding
           this.loading = false
         }
       })
@@ -133,7 +137,7 @@ export default {
 /* Detail see https://github.com/PanJiaChen/vue-element-admin/pull/927 */
 
 $bg:#283443;
-$blue:#68b0fe;
+$blue: #68b0fe;
 $cursor: #fff;
 
 @supports (-webkit-mask: none) and (not (cater-color: $cursor)) {
@@ -168,32 +172,32 @@ $cursor: #fff;
 
   .el-form-item {
     border: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(255, 255, 255, 0.7);
+    background: rgba(255, 255, 255, 0.7); // 输入登录表单的背景色
     border-radius: 5px;
     color: #454545;
+    .el-form-item__error{
+      color: #fff
+    }
   }
-}
-.loginBtn{
+  .loginBtn {
   background: #407ffe;
   height: 64px;
   line-height: 32px;
   font-size: 24px;
 }
-.el-form-item__error{
-color: #fff;
 }
 </style>
 
 <style lang="scss" scoped>
 $bg:#2d3a4b;
 $dark_gray:#889aa4;
-$light_gray:#fff;
+$light_gray:#eee;
 
 .login-container {
   min-height: 100%;
   width: 100%;
-  background-image: url('~@/assets/common/login.jpg');
-  background-position: center;
+  background-image: url('~@/assets/common/login.jpg'); // 设置背景图片
+  background-position: center; // 将图片位置设置为充满整个屏幕
   overflow: hidden;
 
   .login-form {

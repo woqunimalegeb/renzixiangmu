@@ -4,10 +4,8 @@
     <sidebar class="sidebar-container" />
     <div class="main-container">
       <div :class="{'fixed-header':fixedHeader}">
-        <!--头部导航-->
         <navbar />
       </div>
-      <!--右侧主体内容-->
       <app-main />
     </div>
   </div>

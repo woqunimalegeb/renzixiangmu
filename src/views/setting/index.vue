@@ -3,8 +3,10 @@
     <div class="app-container">
       <el-card class="company-box box-card">
         <el-tabs v-model="activeName">
-          <el-tab-pane label="角色管理" name="role">
-            <el-button type="primary" icon="el-icon-plus" size="mini" @click="editVisible=true">新增角色</el-button>
+          <el-tab-pane label="角色管理" name="third">
+            <!-- 按钮 -->
+            <el-button type="primary" icon="el-icon-plus" size="mini" @click="editRoleDialog=true">添加角色</el-button>
+            <!-- 表格 -->
             <el-table
               border
               :data="roles"
@@ -12,13 +14,13 @@
             >
               <el-table-column
                 type="index"
-                label="序号"
                 width="150"
+                label="序号"
               />
               <el-table-column
                 prop="name"
                 label="角色名"
-                width="180"
+                width="200"
                 sortable
               />
               <el-table-column
@@ -29,64 +31,64 @@
               <el-table-column
                 prop="address"
                 label="操作"
-                width="250"
                 align="center"
+                width="250px"
               >
                 <template v-slot="{ row }">
-                  <el-button size="mini" type="text">分配权限</el-button>
-                  <el-button size="mini" type="text" @click="onEditRoles(row)">修改</el-button>
-                  <el-button size="mini" type="text" @click="onDelRoles(row.id)">删除</el-button>
+                  <el-button type="text" size="small">分配权限</el-button>
+                  <el-button type="text" size="small" @click="onDetRoles(row)">修改</el-button>
+                  <el-button type="text" size="small" @click="onDelRoles(row.id)">删除</el-button>
                 </template>
               </el-table-column>
             </el-table>
+            <!-- 分页 -->
             <el-pagination
               :current-page="page.page"
-              :page-size="page.pageSize"
+              :page-size="page.pagesize"
               layout="total, prev, pager, next"
               :total="total"
               @current-change="handleCurrentChange"
             />
           </el-tab-pane>
-
           <el-tab-pane label="公司信息" name="info">
-            <el-form label-width="80px" :model="formLabelAlign">
+            <el-form label-width="250px" :model="formLabelAlign" disabled="true" class="from">
               <el-form-item label="企业名称">
-                <el-input v-model="formLabelAlign.name" :disabled="true" />
+                <el-input v-model="formLabelAlign.name" />
               </el-form-item>
               <el-form-item label="公司地址">
-                <el-input v-model="formLabelAlign.companyAddress" :disabled="true" />
+                <el-input v-model="formLabelAlign.companyAddress" />
               </el-form-item>
               <el-form-item label="公司电话">
-                <el-input v-model="formLabelAlign.companyPhone" :disabled="true" />
+                <el-input v-model="formLabelAlign.companyPhone" />
               </el-form-item>
               <el-form-item label="邮箱">
-                <el-input v-model="formLabelAlign.mailbox" :disabled="true" />
+                <el-input v-model="formLabelAlign.mailbox" />
               </el-form-item>
               <el-form-item label="备注">
-                <el-input v-model="formLabelAlign.remarks" :disabled="true" />
+                <el-input v-model="formLabelAlign.remarks" />
               </el-form-item>
             </el-form>
           </el-tab-pane>
         </el-tabs>
       </el-card>
+
     </div>
     <el-dialog
-      :title="titleText"
-      :visible.sync="editVisible"
+      :title="title"
+      :visible.sync="editRoleDialog"
       width="30%"
-      @close="onDialogClose"
+      @close="onclose"
     >
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+      <el-form ref="form" :model="form" :rules="fromRules" label-width="80px" class="from">
         <el-form-item label="角色名称" prop="name">
           <el-input v-model="form.name" />
         </el-form-item>
-
         <el-form-item label="角色描述" prop="description">
           <el-input v-model="form.description" />
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="editVisible = false">取 消</el-button>
+        <el-button @click="editRoleDialog = false">取 消</el-button>
         <el-button type="primary" @click="onSave">确 定</el-button>
       </span>
     </el-dialog>
@@ -94,119 +96,136 @@
 </template>
 
 <script>
-import { delRole, getRoleById, getRoleList, updateRole, addRole, companyDetail } from '@/api/company.js'
+import { getRolesList, DELETERoles, getRolesById, getByIdUpdate, addRoles, companyAll } from '@/api/company.js'
 export default {
   name: 'Settings',
   data() {
     return {
-      activeName: 'role',
+      activeName: 'third', // 控制tab栏默认选中
       roles: [],
-      formLabelAlign: {
-        name: '',
-        companyAddress: '',
-        companyPhone: '',
-        mailbox: '',
-        remarks: ''
-      },
+      // 分页的页码和条数，请求需传参，跟接口文档保持一致
       page: {
         page: 1,
-        pageSize: 10
+        pagesize: 10
       },
-      total: 0,
-      editVisible: false,
+      // 分页的总条数
+      total: 20,
+      // 控制修改弹层是否显示
+      editRoleDialog: false,
+
       form: {
         name: '',
         description: ''
       },
-      rules: {
+      // 正则校验规则
+      fromRules: {
         name: [
           { required: true, message: '请输入角色名称', trigger: 'blur' },
           { min: 2, max: 5, message: '长度在 2 到 5 个字符', trigger: 'blur' }
         ],
         description: [
           { required: true, message: '请输入角色描述', trigger: 'blur' },
-          { min: 3, max: 50, message: '长度在 3 到 50 个字符', trigger: 'blur' }
+          { min: 2, max: 20, message: '长度在 2 到 20 个字符', trigger: 'blur' }
         ]
+      },
+      formLabelAlign: {
+        name: '',
+        companyAddress: '',
+        companyPhone: '',
+        mailbox: '',
+        remarks: ''
       }
     }
   },
+
   computed: {
-    titleText() {
+    title() {
       return (this.form.id ? '编辑' : '新增') + '角色'
     }
   },
 
   created() {
-    this.loadRoleList()
-    this.onCompanyInfo()
+    this.loadRolesList()
+    this.loadcompanyAll()
   },
+
   methods: {
-    async loadRoleList() {
-      const res = await getRoleList(this.page)
+    // 获取全部角色列表
+    async loadRolesList() {
+      const res = await getRolesList(this.page)
       console.log(res)
       this.roles = res.rows
       this.total = res.total
     },
+    // 点击页码切换
     handleCurrentChange(val) {
+      console.log(val)
       this.page.page = val
-      this.loadRoleList()
+      this.loadRolesList()
     },
+    // 点击删除
     onDelRoles(id) {
-      this.$confirm('此操作将永久删除该角色，是否继续', '提示', {
+      this.$confirm('此操作将永久删除该角色, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(async() => {
-        await delRole(id)
+        await DELETERoles(id)
         this.$message.success('删除成功')
-        this.loadRoleList()
-      }).catch(() => {})
+        this.loadRolesList()
+      }).catch(() => {
+
+      })
     },
-    async onEditRoles(row) {
-      this.editVisible = true
-      const res = await getRoleById(row.id)
-      this.form = res
+    // 根据id获取角色
+    async onDetRoles(row) {
+      const res = await getRolesById(row.id)
       console.log(res)
+      this.form = res
+      this.editRoleDialog = true
     },
+    // 点击确定
     async onSave() {
       try {
         await this.$refs.form.validate()
         if (this.form.id) {
-          await updateRole(this.form)
+          // 根据id更新角色
+          await getByIdUpdate(this.form)
         } else {
-          await addRole(this.form)
-          console.log(this.form)
+          // 新增
+          await addRoles(this.form)
         }
-        this.editVisible = false
-        this.$message.success('更新成功')
 
-        this.loadRoleList()
-      } catch (err) {
-        console.log(err)
+        this.editRoleDialog = false
+        this.loadRolesList()
+        this.$message.success('更新成功')
+      } catch (error) {
+        console.log(error)
       }
     },
-    onDialogClose() {
+    // 关闭弹窗的回调
+    onclose() {
       this.$refs.form.resetFields()
       this.form = {
         name: '',
         description: ''
       }
     },
-    async onCompanyInfo() {
-      const res = await companyDetail()
+    async loadcompanyAll() {
+      const res = await companyAll()
       console.log(res)
       this.formLabelAlign = res[0]
     }
-  }
 
+  }
 }
 </script>
 
 <style scoped lang='scss'>
 .company-box{
- ::v-deep.el-tabs__item{
-    font-size: 18px;
-    padding: 0 40px;
+  ::v-deep.el-tabs__item{
+    font-size: 20px;
+    padding: 0 50px;
     width: 150px;
     text-align: center;
   }
@@ -214,5 +233,14 @@ export default {
     display: flex;
     justify-content: flex-end;
   }
+
 }
+.from{
+  margin-top: 30px;
+}
+::v-deep.el-input.is-disabled .el-input__inner{
+  width: 500px;
+  font-size: 16px;
+}
+
 </style>

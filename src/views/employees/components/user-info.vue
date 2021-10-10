@@ -283,8 +283,8 @@
 </template>
 
 <script>
-import { getEmployeesDetail } from '@/api/employees'
-import { getInfoById } from '@/api/user'
+import { getInfoById, updateInfo } from '@/api/user.js'
+import { getEmployeesDetail, updateEmployeesDetail } from '@/api/employees.js'
 import EmployeeEnum from '@/api/constant/employees'
 export default {
   data() {
@@ -356,18 +356,36 @@ export default {
       }
     }
   },
+  computed: {
+    Id() {
+      return this.$route.params.id
+    }
+  },
 
   created() {
     this.loadEmployeesDetail()
   },
-
   methods: {
     async loadEmployeesDetail() {
-      const res = await getEmployeesDetail(this.$route.params.id)
-      const userInfo = await getInfoById(this.$route.params.id)
+      // 获取用户个人信息
+      const res = await getEmployeesDetail(this.Id)
+      // 获取用户详细信息
+      const userInfo = await getInfoById(this.Id)
+      console.log(res)
       this.formData = res
       this.userInfo = userInfo
+    },
+    // 员工个人信息更改
+    async savePersonal() {
+      await updateEmployeesDetail(this.Id, { ...this.formData })
+      this.$message.success('更新成功')
+    },
+    // 员工详细信息更改
+    async saveUser() {
+      await updateInfo(this.userInfo)
+      this.$message.success('更新成功')
     }
+
   }
 }
 </script>

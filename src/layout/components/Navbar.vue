@@ -1,23 +1,25 @@
 <template>
   <div class="navbar">
+    <!-- 头部导航栏 -->
     <hamburger :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" />
+
     <div class="app-breadcrumb">
       江苏传智播客教育科技股份有限公司
       <span class="breadBtn">体验版</span>
     </div>
+
     <!-- 面包屑
-      <breadcrumb class="breadcrumb-container" /> -->
+    <breadcrumb class="breadcrumb-container" /> -->
 
     <div class="right-menu">
       <el-dropdown class="avatar-container" trigger="click">
-        <!--头像和三角图标-->
         <div class="avatar-wrapper">
-          <img v-imgError="defaultImg" :src="avatar" class="user-avatar">
+          <!-- 定义自定义事件 v-imgError-->
+          <img v-imgError="defauitImg" :src="avatar" class="user-avatar">
           <span>{{ username }}</span>
           <i class="el-icon-arrow-down" />
         </div>
-        <!--下拉菜单-->
-        <el-dropdown-menu slot="dropdown" class="user-avatar">
+        <el-dropdown-menu slot="dropdown" class="user-dropdown">
           <router-link to="/">
             <el-dropdown-item>
               首页
@@ -34,17 +36,18 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import defaultImg from '@/assets/common/bigUserHeader.png'
 import Hamburger from '@/components/Hamburger'
-import {} from '@/directives/index'
+// 引入图片路径
+import defauitImg from '@/assets/common/bigUserHeader.png'
+
 export default {
   components: {
-
     Hamburger
   },
   data() {
     return {
-      defaultImg
+      // 定义图片变量，因为直接写路径，打包会出错
+      defauitImg
     }
   },
   computed: {
@@ -52,15 +55,17 @@ export default {
       'sidebar',
       'avatar',
       'username'
-      // 'username'
     ])
   },
   methods: {
     toggleSideBar() {
       this.$store.dispatch('app/toggleSideBar')
     },
+    // 退出登录
     logout() {
+      // 调用user/logout方法清除token和数据
       this.$store.commit('user/logout')
+      // 跳转到登录页面
       this.$router.push('/login')
     }
   }
@@ -74,24 +79,25 @@ export default {
   position: relative;
   background-image: -webkit-linear-gradient(left, #3d6df8, #5b8cff);
   box-shadow: 0 1px 4px rgba(0,21,41,.08);
-.app-breadcrumb {
-  display: inline-block;
-  font-size: 18px;
-  line-height: 50px;
-  margin-left: 10px;
-  color: #ffffff;
-  cursor: text;
-  .breadBtn {
-    background: #84a9fe;
-    font-size: 14px;
-    padding: 0 10px;
-    display: inline-block;
-    height: 30px;
-    line-height: 30px;
-    border-radius: 10px;
-    margin-left: 15px;
+    .app-breadcrumb {
+      display: inline-block;
+      font-size: 18px;
+      line-height: 50px;
+      margin-left: 10px;
+      color: #ffffff;
+      cursor: text;
+      .breadBtn {
+        background: #84a9fe;
+        font-size: 14px;
+        padding: 0 10px;
+        display: inline-block;
+        height: 30px;
+        line-height: 30px;
+        border-radius: 10px;
+        margin-left: 15px;
+      }
   }
-}
+
   .hamburger-container {
     line-height: 46px;
     height: 100%;
@@ -150,16 +156,9 @@ export default {
 
         .user-avatar {
           cursor: pointer;
-          width: 40px;
-          height: 40px;
+          width: 30px;
+          height: 30px;
           border-radius: 10px;
-        }
-
-        .el-icon-caret-bottom {
-          cursor: pointer;
-          position: absolute;
-          right: -40px;
-          font-size: 12px;
         }
       }
     }

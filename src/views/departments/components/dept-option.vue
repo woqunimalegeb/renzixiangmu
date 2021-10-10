@@ -1,9 +1,9 @@
 <template>
   <el-row>
     <el-col :span="20">
-      <span class="company_tit">{{ row.name }}</span>
+      <span class="company-tiy">{{ row.name }}</span>
     </el-col>
-    <el-col :span="4" class="company_option">
+    <el-col class="company-option" :span="4">
       <span>{{ row.manager }}</span>
       <el-dropdown>
         <span class="el-dropdown-link">
@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import { delDeptById } from '@/api/department'
+import { delDeptById } from '@/api/department.js'
 export default {
   props: {
     row: {
@@ -43,17 +43,22 @@ export default {
   },
 
   methods: {
+    // 点击删除
     delDepts() {
-      this.$confirm('此操作将永久删除该部门，是否继续？', '提示', {
+      this.$confirm('此操作将永久删除该部门, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(async() => {
+        // 删除请求
         await delDeptById(this.row.id)
+        // 删除成功提示
         this.$message.success('删除成功')
+        // 删除成功刷新页面
         this.$emit('ondel')
+        console.log(1)
       }).catch(() => {
-        console.log('点击取消')
+        console.log('取消')
       })
     }
   }
@@ -63,16 +68,16 @@ export default {
 <style scoped lang='scss'>
 .el-row{
   width: 100%;
-  }
- .company_tit{
-    font-size: 14px;
-    font-weight: bold;
-  }
-  .company_option{
-  display: flex;
-  justify-content: flex-end;
-  span:nth-child(1){
-    margin-right: 10px;
-  }
 }
+.company-tiy{
+    font-size: 14px;
+    font-weight: 700;
+  }
+  .company-option{
+    display: flex;
+    justify-content: flex-end;
+    span:nth-child(1){
+      margin-right: 10px;
+    }
+  }
 </style>

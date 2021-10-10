@@ -116,28 +116,26 @@ export function param2Obj(url) {
   return obj
 }
 
-// 处理数据 列表数据 >= 树形数据
-export function transListToTree(val, list) {
-  // 准备空数组
+// 封装方法，把数据处理成树形结构的
+export function listTree(val, list) {
+  // 准备空数组，接收返回数据
   const arr = []
   // 循环数据
   list.forEach(item => {
-    // 匹配子节点
-    // 第一次会找到一级子节点
+    // 判断，匹配数据，找到一级数据，每次判断条件不一样，所以需要传入参数
     if (item.pid === val) {
-      // 一级字节点的子节点
-      const childrenArr = transListToTree(item.id, list)
-      // 如果找到的子节点有
-      if (childrenArr.length) {
-        item.children = childrenArr
-      }
+      // 调用循环把item.id传入，找到一级数据的二级数据
+      const childArr = listTree(item.id, list)
+      // 如果二级就在一级里面添加二级，如果不写判断，没有二级也会返回一个空数组
+      if (childArr.length) { item.children = childArr }
+      // 把数据都添加到我们定义的数组里面
       arr.push(item)
     }
   })
-
-  // 返回数据
   return arr
 }
+
+// 将数字转换日期方法
 export function formatDate(numb, format) {
   const time = new Date((numb - 1) * 24 * 3600000 + 1)
   time.setYear(time.getFullYear() - 70)

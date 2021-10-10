@@ -1,39 +1,42 @@
 <template>
   <div class="dashboard-container">
     <div class="app-container">
-      {{ type===1 ? '正式':'非正式' }}
       <PageTools :show-before="false">
         <template v-slot:after>
-          <el-button type="primary" size="mini" @click="$router.push('/employees/import')">导入</el-button>
-          <el-button type="primary" size="mini" @click="onExcelExport">导出</el-button>
-          <el-button icon="el-icon-plus" type="primary" size="mini" @click="showDialog=true">新增员工</el-button>
+          <el-button size="mini" type="primary" @click="$router.push('/import')">导入</el-button>
+          <el-button size="mini" type="primary" @click="onExeclExport">导出</el-button>
+          <el-button
+            size="mini"
+            type="primary"
+            icon="el-icon-plus"
+            @click="showDialog=true"
+          >新增员工</el-button>
         </template>
-
       </PageTools>
-      <!-- 放置表格和分页 -->
+
       <el-card>
         <el-table border :data="employees">
-          <el-table-column label="序号" sortable type="index" />
-          <el-table-column label="姓名" sortable prop="username" />
-          <el-table-column label="工号" sortable prop="workNumber" />
-          <el-table-column label="聘用形式" sortable prop="formOfEmployment">
+          <el-table-column label="序号" sortable="" type="index" />
+          <el-table-column label="姓名" sortable="" prop="username" />
+          <el-table-column label="工号" sortable="" prop="workNumber" />
+          <el-table-column label="聘用形式" sortable="">
             <template v-slot="{row}">
               {{ row.formOfEmployment | formatHireType }}
             </template>
           </el-table-column>
-          <el-table-column label="部门" sortable>
+          <el-table-column label="部门" sortable="">
             <template v-slot="{row}">
-              {{ row.departmentName || '暂未设置' }}
+              {{ row.departmentName?row.departmentName:'暂无数据' }}
             </template>
           </el-table-column>
-          <el-table-column label="入职时间" sortable prop="createTime">
+          <el-table-column label="入职时间" sortable="">
             <template v-slot="{row}">
-              {{ row.timeOfEntry | formatDate }}
+              {{ row.timeOfEntry | formTime }}
             </template>
           </el-table-column>
-          <el-table-column label="账户状态" sortable>
-            <template v-slot="scope">
-              {{ scope.row.enableState ? '可用':'不可用' }}
+          <el-table-column label="账户状态" sortable="">
+            <template v-slot="scoped">
+              {{ scoped.row.enableState?'可用':'不可用' }}
             </template>
           </el-table-column>
           <el-table-column label="操作" sortable="" fixed="right" width="280">
@@ -43,26 +46,31 @@
               <el-button type="text" size="small">调岗</el-button>
               <el-button type="text" size="small">离职</el-button>
               <el-button type="text" size="small">角色</el-button>
-              <el-button type="text" size="small" @click="onDelete(row)">删除</el-button>
+              <el-button type="text" size="small" @click="onClickDel(row)">删除</el-button>
             </template>
           </el-table-column>
         </el-table>
         <!-- 分页组件 -->
         <el-row type="flex" justify="center" align="middle" style="height: 60px">
-          <el-pagination :total="total" :page-size="tablePage.size" layout="total,prev, pager, next" @current-change="handleCurrentChange" />
+          <el-pagination
+            layout="total,prev, pager, next"
+            :total="total"
+            :page-size="tablePage.size"
+            @current-change="handleCurrentChange"
+          />
         </el-row>
       </el-card>
     </div>
-    <AddEmployees :show-dialog.sync="showDialog" @add-success="loadEmployees" />
-
+    <AddEmployees :show-dialog.sync="showDialog" @AddEmployees="loadEmployeesList" />
+    <!-- <AddEmployees v-model="showDialog" /> -->
   </div>
 </template>
 
 <script>
-import { delEmployee, getEmployeesList } from '@/api/employees'
-import AddEmployees from './components/add-employees.vue'
+import { formatDate } from '@/utils'
+import { getEmployeesList, delEmployee } from '@/api/employees.js'
+import AddEmployees from './components/AddEmployees.vue'
 import { formatHireType } from '@/filters'
-
 export default {
   name: 'Employees',
   components: {
@@ -70,72 +78,80 @@ export default {
   },
   data() {
     return {
+      employees: [],
       tablePage: {
         page: 1,
-        size: 5
+        size: 10
       },
-      total: 0,
-      employees: [],
+      total: null,
+      // 新增弹窗
       showDialog: false
     }
   },
+
   created() {
-    this.loadEmployees()
-    this.type = 1
+    this.loadEmployeesList()
   },
 
   methods: {
-    async loadEmployees() {
+    // 获取员工信息
+    async loadEmployeesList() {
       const res = await getEmployeesList(this.tablePage)
-      this.total = res.total
+      console.log(res)
       this.employees = res.rows
+      this.total = res.total
     },
+    // 点击页码变化
     handleCurrentChange(val) {
       this.tablePage.page = val
-      this.loadEmployees()
+      this.loadEmployeesList()
     },
-    onDelete(row) {
-      this.$confirm('此操作将永久删除该文件，是否继续？', '提示', {
+    // 点击删除,通过插槽拿到当前点击数据，传值
+    onClickDel(row) {
+      this.$confirm('此操作将永久删除该员工, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(async() => {
         await delEmployee(row.id)
-        this.$message.success('删除成功')
-        this.loadEmployees()
-      }).catch(() => {})
+        this.$message.success('删除成功!')
+        this.loadEmployeesList()
+      }).catch(() => {
+      })
     },
-    onExcelExport() {
+    // 点击导出
+    onExeclExport() {
       import('@/vendor/Export2Excel').then(async excel => {
-        // const tHeader = ['姓名', '手机号', '入职日期', '聘用形式', '转正日记', '工号', '部门']
-        const res = await getEmployeesList({ page: 1, size: this.total })
+        // 建立一个对象，形成映射关系，不需要判断，循环员工列表，我们需要的数据格式是[[],[]],所以定义数组，再循环我们的表头，拿到里面的每一项，将数据一一对应的放在数组里面
         const mapKey = {
           '姓名': 'username',
           '手机号': 'mobile',
           '入职日期': 'timeOfEntry',
-          '聘用形式': 'formOfEmployment',
           '转正日期': 'correctionTime',
           '工号': 'workNumber',
+          '聘用形式': 'formOfEmployment',
           '部门': 'departmentName'
         }
+        // 表头,把mapKey的key形成一个数组，就不需要自己定义
         const tHeader = Object.keys(mapKey)
-        const arr = this.formatExcelData(res.rows, tHeader, mapKey)
-        console.log(res)
-
+        // 请求员工列表
+        const res = await getEmployeesList({ page: 1, size: this.total })
+        const arr = this.formetExeclDate(res.rows, tHeader, mapKey)
         excel.export_json_to_excel({
-          header: tHeader,
-          data: arr,
-          filename: '黑马员工列表',
-          autoWidth: true,
-          bookType: 'xlsx'
+          header: tHeader, // 表头 必填
+          data: arr, // 具体数据 必填
+          filename: '员工列表', // 非必填
+          autoWidth: true, // 非必填
+          bookType: 'xlsx' // 非必填
         })
       })
     },
-    formatExcelData(data, tHeader, mapKey) {
+    formetExeclDate(data, tHeader, mapKey) {
+      // 处理数据
       return data.map(item => {
         return tHeader.map(headerItem => {
           if ((item[mapKey[headerItem]] - 0) > 0 && (headerItem === '入职日期' || headerItem === '转正日期')) {
-            return this.formatDate(item[mapKey[headerItem]], '/')
+            return formatDate(item[mapKey[headerItem]], '/')
           } else if (headerItem === '聘用形式') {
             return formatHireType(item[mapKey[headerItem]])
           }

@@ -1,8 +1,6 @@
 <template>
   <section class="app-main">
-    <!--vue提供的组件 提供过渡动画的-->
     <transition name="fade-transform" mode="out-in">
-      <!--路由占位-->
       <router-view :key="key" />
     </transition>
   </section>

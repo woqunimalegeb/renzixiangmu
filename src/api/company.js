@@ -1,28 +1,42 @@
 import request from '@/utils/request'
 
-export function getRoleList(params) {
+export const getRolesList = (params) => {
   return request({
     url: '/sys/role',
-    method: 'GET',
     params
   })
 }
 
-export function delRole(id) {
+/**
+ * 根据ID删除角色
+ * @param {*} params
+ * @returns
+ */
+export const DELETERoles = (id) => {
   return request({
     url: '/sys/role/' + id,
     method: 'DELETE'
   })
 }
 
-export function getRoleById(id) {
+/**
+ * 根据ID获取角色详情
+ * @param {*} params
+ * @returns
+ */
+export const getRolesById = (id) => {
   return request({
     url: '/sys/role/' + id,
-    method: 'GET'
+    method: 'get'
   })
 }
 
-export function updateRole(data) {
+/**
+ * 根据ID更新角色
+ * @param {*} params
+ * @returns
+ */
+export const getByIdUpdate = (data) => {
   return request({
     url: '/sys/role/' + data.id,
     method: 'PUT',
@@ -30,7 +44,12 @@ export function updateRole(data) {
   })
 }
 
-export function addRole(data) {
+/**
+ * 添加角色
+ * @param {*} params
+ * @returns
+ */
+export const addRoles = (data) => {
   return request({
     url: '/sys/role',
     method: 'POST',
@@ -38,7 +57,12 @@ export function addRole(data) {
   })
 }
 
-export function companyDetail() {
+/**
+ * 查询全部企业列表
+ * @param {*} params
+ * @returns
+ */
+export const companyAll = () => {
   return request({
     url: '/company',
     method: 'GET'

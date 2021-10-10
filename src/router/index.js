@@ -5,17 +5,23 @@ Vue.use(Router)
 
 /* Layout */
 import Layout from '@/layout'
-import approvalsRouter from '../store/modules/approvals'
-import departmentsRouter from '../store/modules/departments'
-import employeesRouter from '../store/modules/employees'
-import permissionRouter from '../store/modules/permission'
-import attendancesRouter from '../store/modules/attendances'
-import salarysRouter from '../store/modules/salarys'
-import settingRouter from '../store/modules/setting'
-import socialRouter from '../store/modules/social'
-import employeesImport from '../store/modules/import'
 
-// 静态路由
+// 引入多个模块的规则
+import approvalsRouter from './modules/approvals.js'
+import departmentsRouter from './modules/departments.js'
+import employeesRouter from './modules/employees.js'
+import permissionRouter from './modules/permission.js'
+import attendancesRouter from './modules/attendances.js'
+import salarysRouter from './modules/salarys.js'
+import settingRouter from './modules/setting.js'
+import socialRouter from './modules/social.js'
+import employeesImport from './modules/import.js'
+
+/**
+ * constantRoutes
+ * a base page that does not have permission requirements
+ * all roles can be accessed
+ */
 export const constantRoutes = [
   {
     path: '/login',
@@ -33,20 +39,20 @@ export const constantRoutes = [
     path: '/',
     component: Layout,
     redirect: '/dashboard',
-    // 子路由对应的组件 会显示到 父路由组件
     children: [{
-      path: 'dashboard', // /dashboard
+      path: 'dashboard',
       name: 'Dashboard',
       component: () => import('@/views/dashboard/index'),
       meta: { title: 'Dashboard', icon: 'dashboard' }
     }]
   },
-
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
 ]
-// 动态路由组
-const varRoutes = [
+
+// 动态路由
+// 将每一项路由抽离出去
+const varRouter = [
   approvalsRouter,
   departmentsRouter,
   employeesRouter,
@@ -56,15 +62,13 @@ const varRoutes = [
   settingRouter,
   socialRouter,
   employeesImport
-
 ]
-// 可以创建路由实例
 const createRouter = () => new Router({
+  // mode: 'history', // require service support
   scrollBehavior: () => ({ y: 0 }),
-  routes: [...constantRoutes, ...varRoutes] // 定义路由规则
+  routes: [...constantRoutes, ...varRouter]
 })
 
-// router = this.$router
 const router = createRouter()
 
 // Detail see: https://github.com/vuejs/vue-router/issues/1234#issuecomment-357941465

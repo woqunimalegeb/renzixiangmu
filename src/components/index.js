@@ -1,8 +1,13 @@
-import PageTools from './PageTools/index.vue'
-import UploadExcel from './Uploadexcel/index.vue'
+import PageTools from '@/components/PageTools'
+import UploadExecl from '@/components/UploadExecl'
+import UploadImage from '@/components/UploadImage'
+
 export default {
+// Vue.use内部会解析一个对象里面有install
   install(Vue) {
     Vue.component('PageTools', PageTools)
-    Vue.component('UploadExcel', UploadExcel)
+    Vue.component('UploadExecl', UploadExecl)
+    Vue.component('UploadImage', UploadImage)
   }
+
 }

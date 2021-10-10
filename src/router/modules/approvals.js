@@ -2,9 +2,9 @@ import Layout from '@/layout'
 export default {
   path: '/approvals',
   component: Layout,
-
   children: [
-    { name: 'approvals',
+    {
+      name: 'approvals',
       path: '', // 默认子路由
       component: () => import('@/views/approvals'),
       // 存储路由信息

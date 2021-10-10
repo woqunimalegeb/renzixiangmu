@@ -65,7 +65,7 @@ export default {
       vertical-align: middle;
     }
   }
-  //折叠才会有collapse类名，折叠后的小logo
+
   &.collapse {
     .sidebar-logo {
       margin-right: 0px;
