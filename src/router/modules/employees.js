@@ -17,6 +17,11 @@ export default {
       path: ':id', // 默认子路由
       component: () => import('@/views/employees/dateil'),
       hidden: true
+    },
+    {
+      path: 'print/:Id',
+      component: () => import('@/views/employees/print'),
+      hidden: true
     }
   ]
 }

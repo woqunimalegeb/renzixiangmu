@@ -18,6 +18,16 @@
         <el-table border :data="employees">
           <el-table-column label="序号" sortable="" type="index" />
           <el-table-column label="姓名" sortable="" prop="username" />
+          <el-table-column label="头像">
+            <template v-slot="{row}">
+              <img
+                v-imgError="require('../../assets/common/bigUserHeader.png')"
+                class="avatar"
+                :src="row.staffPhoto"
+                @click="onClickAvatar(row.staffPhoto)"
+              >
+            </template>
+          </el-table-column>>
           <el-table-column label="工号" sortable="" prop="workNumber" />
           <el-table-column label="聘用形式" sortable="">
             <template v-slot="{row}">
@@ -45,7 +55,7 @@
               <el-button type="text" size="small">转正</el-button>
               <el-button type="text" size="small">调岗</el-button>
               <el-button type="text" size="small">离职</el-button>
-              <el-button type="text" size="small">角色</el-button>
+              <el-button type="text" size="small" @click="onClickRole(row.id)">角色</el-button>
               <el-button type="text" size="small" @click="onClickDel(row)">删除</el-button>
             </template>
           </el-table-column>
@@ -59,10 +69,16 @@
             @current-change="handleCurrentChange"
           />
         </el-row>
+
       </el-card>
     </div>
     <AddEmployees :show-dialog.sync="showDialog" @AddEmployees="loadEmployeesList" />
     <!-- <AddEmployees v-model="showDialog" /> -->
+    <!-- 当前组件 -->
+    <el-dialog :visible.sync="qrcodeDialog">
+      <canvas id="qrcode" />
+    </el-dialog>
+    <assign-role :set-role-dialog.sync="setRoleDialog" :employees-id="currentEmployeesId" />
   </div>
 </template>
 
@@ -71,10 +87,14 @@ import { formatDate } from '@/utils'
 import { getEmployeesList, delEmployee } from '@/api/employees.js'
 import AddEmployees from './components/AddEmployees.vue'
 import { formatHireType } from '@/filters'
+import AssignRole from './components/assign-role.vue'
+import QRCode from 'qrcode'
+console.log(QRCode)
 export default {
   name: 'Employees',
   components: {
-    AddEmployees
+    AddEmployees,
+    AssignRole
   },
   data() {
     return {
@@ -85,7 +105,10 @@ export default {
       },
       total: null,
       // 新增弹窗
-      showDialog: false
+      showDialog: false,
+      qrcodeDialog: false,
+      setRoleDialog: false,
+      currentEmployeesId: ''
     }
   },
 
@@ -158,11 +181,34 @@ export default {
           return item[mapKey[headerItem]]
         })
       })
+    },
+    onClickAvatar(imgUrl) {
+      if (!imgUrl) return this.$message.error('该用户还未设置头像')
+      this.qrcodeDialog = true
+      this.$nextTick(() => {
+        const canvas = document.getElementById('qrcode')
+        QRCode.toCanvas(canvas, imgUrl, function(error) {
+          if (error) return this.$message.error('生成失败')
+        })
+      })
+    },
+    onClickRole(employeesId) {
+      this.setRoleDialog = true
+      this.currentEmployeesId = employeesId
     }
   }
 }
 </script>
 
 <style scoped lang='scss'>
-
+.avatar{
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+}
+::v-deep .el-dialog_body{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 </style>

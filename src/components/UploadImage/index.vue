@@ -73,7 +73,7 @@ export default {
       cos.putObject({
         Bucket: 'renzi-hz-1307763771', /* 必须存储桶的名字 */
         Region: 'ap-shanghai', /* 存储桶所在地域，必须字段 */
-        Key: 'data.file.name', /* 必须 文件名字，自己取 */
+        Key: data.file.name, /* 必须 文件名字，自己取 */
         StorageClass: 'STANDARD',
         Body: data.file, // 上传文件对象
         onProgress: progressData => {

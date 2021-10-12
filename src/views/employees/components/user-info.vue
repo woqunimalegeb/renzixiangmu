@@ -1,5 +1,12 @@
 <template>
   <div class="user-info">
+    <el-row type="flex" justify="end">
+      <el-tooltip content="打印个人基本信息">
+        <router-link :to="`/employees/print/${Id}?type=personal`">
+          <i class="el-icon-printer" />
+        </router-link>
+      </el-tooltip>
+    </el-row>
     <!-- 个人信息 -->
     <el-form label-width="220px">
       <!-- 工号 入职时间 -->
@@ -58,7 +65,7 @@
         <el-col :span="12">
           <el-form-item label="员工头像">
             <!-- 放置上传图片 -->
-
+            <upload-image ref="uploadImage" @on-success="onSuccessEmployeesAvatar" />
           </el-form-item>
         </el-col>
       </el-row>
@@ -374,6 +381,9 @@ export default {
       console.log(res)
       this.formData = res
       this.userInfo = userInfo
+      if (userInfo.staffPhoto) {
+        this.$refs.uploadImage.filelist = [{ url: userInfo.staffPhoto }]
+      }
     },
     // 员工个人信息更改
     async savePersonal() {
@@ -382,10 +392,15 @@ export default {
     },
     // 员工详细信息更改
     async saveUser() {
+      if (this.$refs.uploadImage.percentage !== 100) {
+        return this.$message.error('图片还在上传...')
+      }
       await updateInfo(this.userInfo)
       this.$message.success('更新成功')
+    },
+    onSuccessEmployeesAvatar(filelist, url) {
+      this.userInfo.staffPhoto = url
     }
-
   }
 }
 </script>

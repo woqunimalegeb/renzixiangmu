@@ -19,7 +19,10 @@ import '@/derectives'
 
 // 引入全局的复用组件
 import HrsaasUI from '@/components'
+// 打印功能
+import Print from 'vue-print-nb'
 // 注册全局的复用组件
+Vue.use(Print)
 Vue.use(HrsaasUI)
 
 // set ElementUI lang to EN

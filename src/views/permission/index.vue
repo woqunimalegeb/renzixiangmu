@@ -1,9 +1,11 @@
 <template>
   <div class="dashboard-container">
     <div class="app-container">
-      <h2>
-        权限
-      </h2>
+      <page-tools :show-before="false">
+        <template v-slot:after>
+          <el-button type="primary" size="small">添加权限</el-button>
+        </template>
+      </page-tools>
     </div>
   </div>
 </template>
