@@ -19,7 +19,7 @@ export default {
       hidden: true
     },
     {
-      path: 'print/:Id',
+      path: 'print/:id', // 默认子路由
       component: () => import('@/views/employees/print'),
       hidden: true
     }

@@ -337,7 +337,7 @@ export default {
   data() {
     return {
       formData: {},
-      userId: this.$route.params.Id,
+      userId: this.$route.params.id,
       type: this.$route.query.type // 打印类型
     }
   },

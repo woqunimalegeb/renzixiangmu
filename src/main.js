@@ -19,10 +19,7 @@ import '@/derectives'
 
 // 引入全局的复用组件
 import HrsaasUI from '@/components'
-// 打印功能
-import Print from 'vue-print-nb'
 // 注册全局的复用组件
-Vue.use(Print)
 Vue.use(HrsaasUI)
 
 // set ElementUI lang to EN
@@ -39,6 +36,10 @@ import * as filters from '@/filters'
 Object.keys(filters).forEach(item => {
   Vue.filter(item, filters[item])
 })
+// 打印功能包
+import Print from 'vue-print-nb'
+// 提供v-print指令，绑定的值就是需要打印的区域
+Vue.use(Print)
 
 new Vue({
   el: '#app',

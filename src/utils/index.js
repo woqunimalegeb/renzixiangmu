@@ -117,6 +117,7 @@ export function param2Obj(url) {
 }
 
 // 封装方法，把数据处理成树形结构的
+// (val 父节点的pid, list 需要处理的数据)
 export function listTree(val, list) {
   // 准备空数组，接收返回数据
   const arr = []

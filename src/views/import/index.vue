@@ -20,7 +20,6 @@ export default {
 
   methods: {
     async onSuccess({ results }) {
-      const obj = {}
       // 提前定义，否则需要判断
       const userRelations = {
         '入职日期': 'timeOfEntry',
@@ -31,6 +30,7 @@ export default {
       }
       // map循环数组，处理数据格式，长度与之前的数组长度一致，return什么就会返回什么
       const execlArr = results.map(item => {
+        const obj = {}
         Object.keys(item).forEach(key => {
           // 判断是否是需要转换日期的，必须return，结束这次循环
           if (key === '入职日期' || key === '转正日期') {

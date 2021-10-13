@@ -2,9 +2,10 @@ import Layout from '@/layout'
 export default {
   path: '/social',
   component: Layout,
+  name: 'social_securitys',
   children: [
     {
-      name: 'social',
+
       path: '', // 默认子路由
       component: () => import('@/views/social'),
       // 存储路由信息

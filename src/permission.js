@@ -1,9 +1,10 @@
-import router from '@/router'
+
 import store from '@/store'
 // 进度条组件
 import nProgress from 'nprogress'
 // 进度条组件css
 import 'nprogress/nprogress.css'
+import router from '@/router'
 const whiteList = ['/login', '/404']
 router.beforeEach(async(to, from, next) => {
   // 开启进度条
@@ -12,7 +13,9 @@ router.beforeEach(async(to, from, next) => {
   if (store.state.user.token) {
     // 每次刷新时就发送获取用户信息请求，因为保存在vuex刷新会没有,所以判断里面有没有数据,没有就发送请求
     if (!store.state.user.UserInfo.userId) {
-      await store.dispatch('user/getUserInfo')
+      const { roles } = await store.dispatch('user/getUserInfo')
+      store.commit('permission/filterRouter', roles)
+      next(to.path)
     }
 
     // 如果登录了

@@ -22,12 +22,13 @@
             <template v-slot="{row}">
               <img
                 v-imgError="require('../../assets/common/bigUserHeader.png')"
-                class="avatar"
+                class="Image"
                 :src="row.staffPhoto"
-                @click="onClickAvatar(row.staffPhoto)"
+                alt=""
+                @click="onClickCanvas(row.staffPhoto)"
               >
             </template>
-          </el-table-column>>
+          </el-table-column>
           <el-table-column label="工号" sortable="" prop="workNumber" />
           <el-table-column label="聘用形式" sortable="">
             <template v-slot="{row}">
@@ -51,12 +52,12 @@
           </el-table-column>
           <el-table-column label="操作" sortable="" fixed="right" width="280">
             <template v-slot="{row}">
-              <el-button type="text" size="small" @click="$router.push('/employees/'+row.id)">查看</el-button>
+              <el-button :disabled="checkPermission(points.pointUserUpdate)" type="text" size="small" @click="$router.push('/employees/'+row.id)">查看</el-button>
               <el-button type="text" size="small">转正</el-button>
-              <el-button type="text" size="small">调岗</el-button>
+              <el-button :disabled="checkPermission(points.pointUserSetJob)" type="text" size="small">调岗</el-button>
               <el-button type="text" size="small">离职</el-button>
               <el-button type="text" size="small" @click="onClickRole(row.id)">角色</el-button>
-              <el-button type="text" size="small" @click="onClickDel(row)">删除</el-button>
+              <el-button :disabled="checkPermission(point.pointDelete)" type="text" size="small" @click="onClickDel(row)">删除</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -69,16 +70,23 @@
             @current-change="handleCurrentChange"
           />
         </el-row>
-
       </el-card>
     </div>
     <AddEmployees :show-dialog.sync="showDialog" @AddEmployees="loadEmployeesList" />
     <!-- <AddEmployees v-model="showDialog" /> -->
-    <!-- 当前组件 -->
-    <el-dialog :visible.sync="qrcodeDialog">
-      <canvas id="qrcode" />
+
+    <!-- 点击头像生产二维码弹层 -->
+    <el-dialog id="el-dialog__header" :visible.sync="qrcodeDialog">
+      <!-- 二维码画布 -->
+      <canvas id="canvas" />
     </el-dialog>
-    <assign-role :set-role-dialog.sync="setRoleDialog" :employees-id="currentEmployeesId" />
+
+    <!-- 点击分配角色弹窗 -->
+    <AssignRole
+      :set-role-dialog.sync="setRoleDialog"
+      :employees-id="employeesId"
+      @closeRoleDialog="setRoleDialog=false"
+    />
   </div>
 </template>
 
@@ -87,9 +95,9 @@ import { formatDate } from '@/utils'
 import { getEmployeesList, delEmployee } from '@/api/employees.js'
 import AddEmployees from './components/AddEmployees.vue'
 import { formatHireType } from '@/filters'
-import AssignRole from './components/assign-role.vue'
 import QRCode from 'qrcode'
-console.log(QRCode)
+import AssignRole from './components/assignRole.vue'
+import { mapGetters } from '@/store/getters'
 export default {
   name: 'Employees',
   components: {
@@ -98,25 +106,32 @@ export default {
   },
   data() {
     return {
-      employees: [],
+      employees: [], // 数据
       tablePage: {
         page: 1,
         size: 10
       },
       total: null,
-      // 新增弹窗
-      showDialog: false,
-      qrcodeDialog: false,
+      showDialog: false, // 新增弹窗
+      qrcodeDialog: false, // 二维码画布弹层
       setRoleDialog: false,
-      currentEmployeesId: ''
+      employeesId: ''// 员工Id
     }
   },
 
   created() {
     this.loadEmployeesList()
   },
+  computed: {
+    ...mapGetters(['points', 'roles'])
+  },
+  mounted() {
 
+  },
   methods: {
+    checkPermission(val) {
+      return !this.roles.point.includes(val)
+    },
     // 获取员工信息
     async loadEmployeesList() {
       const res = await getEmployeesList(this.tablePage)
@@ -182,31 +197,40 @@ export default {
         })
       })
     },
-    onClickAvatar(imgUrl) {
-      if (!imgUrl) return this.$message.error('该用户还未设置头像')
+    // 点击头像显示二维码画布弹层
+    onClickCanvas(Image) {
+      if (!Image) return this.$message.error('该用户暂未设置头像')
+      // 弹层显示，异步，视图还未改变
       this.qrcodeDialog = true
+      // 上一步为异步，等视图改变，所以加this.$nextTick
       this.$nextTick(() => {
-        const canvas = document.getElementById('qrcode')
-        QRCode.toCanvas(canvas, imgUrl, function(error) {
+        // 拿到dom
+        const canvas = document.getElementById('canvas')
+
+        QRCode.toCanvas(canvas, Image, error => {
           if (error) return this.$message.error('生成失败')
         })
       })
     },
-    onClickRole(employeesId) {
+    onClickRole(rowId) {
       this.setRoleDialog = true
-      this.currentEmployeesId = employeesId
+      // 保存用户Id,子组件发请求参数
+      this.employeesId = rowId
     }
   }
 }
 </script>
 
 <style scoped lang='scss'>
-.avatar{
+.Image{
   width: 100px;
   height: 100px;
   border-radius: 50%;
 }
-::v-deep .el-dialog_body{
+::v-deep #el-dialog__header{
+  padding:40px 20px 10px !important;
+}
+::v-deep .el-dialog__body {
   display: flex;
   align-items: center;
   justify-content: center;

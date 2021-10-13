@@ -1,6 +1,7 @@
 // 引入接口
 import { login, getInfo, getInfoById } from '@/api/user.js'
 import { setToken, getToken, removeToken, setTokenTime } from '@/utils/auth.js'
+import { resetRouter } from '../../router'
 const state = {
   // 存token
   // 调用Cookies里的getToken
@@ -29,6 +30,7 @@ const mutations = {
     removeToken()
     // 清除vuex里的UserInfo数据
     state.UserInfo = {}
+    resetRouter()
   }
 }
 const actions = {
@@ -43,11 +45,16 @@ const actions = {
   async getUserInfo(context) {
     // 获取用户信息请求
     const res = await getInfo()
+    res.roles.points.forEach((item, index) => {
+      res.roles.points[index] = item.toLocaleLowerCase()
+    })
     // 根据获取用户信息请求来获取用户详细信息请求
     const InfoById = await getInfoById(res.userId)
     console.log(InfoById)
+
     // 将两个数据都保存到数据里面
     context.commit('setUserInfo', { ...res, ...InfoById })
+    return res
   }
 }
 

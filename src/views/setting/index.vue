@@ -35,7 +35,7 @@
                 width="250px"
               >
                 <template v-slot="{ row }">
-                  <el-button type="text" size="small">分配权限</el-button>
+                  <el-button type="text" size="small" @click="onSetPermission(row)">分配权限</el-button>
                   <el-button type="text" size="small" @click="onDetRoles(row)">修改</el-button>
                   <el-button type="text" size="small" @click="onDelRoles(row.id)">删除</el-button>
                 </template>
@@ -51,7 +51,7 @@
             />
           </el-tab-pane>
           <el-tab-pane label="公司信息" name="info">
-            <el-form label-width="250px" :model="formLabelAlign" disabled="true" class="from">
+            <el-form label-width="250px" :model="formLabelAlign" :disabled="true" class="from">
               <el-form-item label="企业名称">
                 <el-input v-model="formLabelAlign.name" />
               </el-form-item>
@@ -92,11 +92,27 @@
         <el-button type="primary" @click="onSave">确 定</el-button>
       </span>
     </el-dialog>
+    <el-dialog
+      :title="setPermissionTitle"
+      :visible.sync="setPermissionDialoge"
+      width="50%"
+      @close="onClose"
+    >
+      <el-tree ref="setPermissionTree" node-key="id" :check-strictly="true" :default-checked-keys="defaultKeys" :data="permissionList" :props="defaultProps" show-checkbox default-expand-all icon-class=" " />
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="setPermissionDialoge = false">取 消</el-button>
+        <el-button type="primary" @click="onSetPermissionSave">确 定</el-button>
+      </span>
+    </el-dialog>
+
   </div>
 </template>
 
 <script>
+import { getPermissionList, setPermissionToRole } from '@/api/permission'
 import { getRolesList, DELETERoles, getRolesById, getByIdUpdate, addRoles, companyAll } from '@/api/company.js'
+import { listTree } from '@/utils'
+
 export default {
   name: 'Settings',
   data() {
@@ -112,7 +128,9 @@ export default {
       total: 20,
       // 控制修改弹层是否显示
       editRoleDialog: false,
-
+      setPermissionDialoge: false,
+      setPermissionTitle: '',
+      defaultKeys: [],
       form: {
         name: '',
         description: ''
@@ -134,6 +152,46 @@ export default {
         companyPhone: '',
         mailbox: '',
         remarks: ''
+      },
+      data: [{
+        label: '一级 1',
+        children: [{
+          label: '二级 1-1',
+          children: [{
+            label: '三级 1-1-1'
+          }]
+        }]
+      }, {
+        label: '一级 2',
+        children: [{
+          label: '二级 2-1',
+          children: [{
+            label: '三级 2-1-1'
+          }]
+        }, {
+          label: '二级 2-2',
+          children: [{
+            label: '三级 2-2-1'
+          }]
+        }]
+      }, {
+        label: '一级 3',
+        children: [{
+          label: '二级 3-1',
+          children: [{
+            label: '三级 3-1-1'
+          }]
+        }, {
+          label: '二级 3-2',
+          children: [{
+            label: '三级 3-2-1'
+          }]
+        }]
+      }],
+      permissionList: [],
+      defaultProps: {
+
+        label: 'name'
       }
     }
   },
@@ -215,8 +273,27 @@ export default {
       const res = await companyAll()
       console.log(res)
       this.formLabelAlign = res[0]
+    },
+    async onSetPermission(row) {
+      this.roleId = row.id
+      this.setPermissionTitle = '为[' + row.name + ']分配权限'
+      this.setPermissionDialoge = true
+      this.permissionList = listTree('0', await getPermissionList())
+      this.defaultKeys = (await getRolesById(row.id)).permIds
+    },
+    async onSetPermissionSave() {
+      const permissionIds = this.$refs.setPermissionTree.getCheckedKeys()
+      if (!permissionIds.length) return this.$message.error('请选择必要的权限')
+      await setPermissionToRole({
+        id: this.roleId,
+        permIds: permissionIds
+      })
+      this.$message('分配成功')
+      this.setPermissionDialoge = false
+    },
+    onClose() {
+      this.defaultKeys = []
     }
-
   }
 }
 </script>
