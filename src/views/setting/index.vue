@@ -50,6 +50,7 @@
               @current-change="handleCurrentChange"
             />
           </el-tab-pane>
+          <!-- 公司信息 -->
           <el-tab-pane label="公司信息" name="info">
             <el-form label-width="250px" :model="formLabelAlign" :disabled="true" class="from">
               <el-form-item label="企业名称">
@@ -73,6 +74,7 @@
       </el-card>
 
     </div>
+    <!-- 修改添加对话框 -->
     <el-dialog
       :title="title"
       :visible.sync="editRoleDialog"
@@ -92,33 +94,46 @@
         <el-button type="primary" @click="onSave">确 定</el-button>
       </span>
     </el-dialog>
+    <!-- 分配权限对话框 -->
     <el-dialog
       :title="setPermissionTitle"
-      :visible.sync="setPermissionDialoge"
+      :visible.sync="setPermissionDialog"
       width="50%"
-      @close="onClose"
+      @close="onPermissionclose"
     >
-      <el-tree ref="setPermissionTree" node-key="id" :check-strictly="true" :default-checked-keys="defaultKeys" :data="permissionList" :props="defaultProps" show-checkbox default-expand-all icon-class=" " />
+      <el-tree
+        v-if="setPermissionDialog"
+        ref="SetPermissionTree"
+        :data="PermissionList"
+        :props="defaultProps"
+        show-checkbox
+        icon-class=" "
+        default-expand-all
+        :default-checked-keys="defaultKeys"
+        node-key="id"
+        check-strictly
+      />
       <span slot="footer" class="dialog-footer">
-        <el-button @click="setPermissionDialoge = false">取 消</el-button>
-        <el-button type="primary" @click="onSetPermissionSave">确 定</el-button>
+        <el-button @click="onPermissionclose">取 消</el-button>
+        <el-button type="primary" @click="setPermissionSave">确 定</el-button>
       </span>
     </el-dialog>
-
   </div>
 </template>
 
 <script>
-import { getPermissionList, setPermissionToRole } from '@/api/permission'
-import { getRolesList, DELETERoles, getRolesById, getByIdUpdate, addRoles, companyAll } from '@/api/company.js'
+import { getRolesList, DELETERoles, getRolesById, getByIdUpdate, addRoles, companyAll, PermissAssignPrem } from '@/api/company.js'
+import { getPermissionList } from '@/api/permission.js'
 import { listTree } from '@/utils'
-
 export default {
   name: 'Settings',
   data() {
     return {
+      PermissionId: '', // 更新权限参数Id
+      setPermissionDialog: false, // 分配权限对话框控制
+      setPermissionTitle: '', // 分配权限对话框名字
       activeName: 'third', // 控制tab栏默认选中
-      roles: [],
+      roles: [], // 角色表格数据
       // 分页的页码和条数，请求需传参，跟接口文档保持一致
       page: {
         page: 1,
@@ -128,14 +143,12 @@ export default {
       total: 20,
       // 控制修改弹层是否显示
       editRoleDialog: false,
-      setPermissionDialoge: false,
-      setPermissionTitle: '',
-      defaultKeys: [],
+
       form: {
         name: '',
         description: ''
       },
-      // 正则校验规则
+      // 角色添加编辑正则校验规则
       fromRules: {
         name: [
           { required: true, message: '请输入角色名称', trigger: 'blur' },
@@ -146,6 +159,7 @@ export default {
           { min: 2, max: 20, message: '长度在 2 到 20 个字符', trigger: 'blur' }
         ]
       },
+      // 公司信息表格数据
       formLabelAlign: {
         name: '',
         companyAddress: '',
@@ -153,49 +167,17 @@ export default {
         mailbox: '',
         remarks: ''
       },
-      data: [{
-        label: '一级 1',
-        children: [{
-          label: '二级 1-1',
-          children: [{
-            label: '三级 1-1-1'
-          }]
-        }]
-      }, {
-        label: '一级 2',
-        children: [{
-          label: '二级 2-1',
-          children: [{
-            label: '三级 2-1-1'
-          }]
-        }, {
-          label: '二级 2-2',
-          children: [{
-            label: '三级 2-2-1'
-          }]
-        }]
-      }, {
-        label: '一级 3',
-        children: [{
-          label: '二级 3-1',
-          children: [{
-            label: '三级 3-1-1'
-          }]
-        }, {
-          label: '二级 3-2',
-          children: [{
-            label: '三级 3-2-1'
-          }]
-        }]
-      }],
-      permissionList: [],
-      defaultProps: {
+      // 树形数据
+      PermissionList: [],
 
+      defaultProps: {
         label: 'name'
-      }
+      },
+      // 树形默认选中数组
+      defaultKeys: []
     }
   },
-
+  // 新增编辑对话框名字
   computed: {
     title() {
       return (this.form.id ? '编辑' : '新增') + '角色'
@@ -211,7 +193,6 @@ export default {
     // 获取全部角色列表
     async loadRolesList() {
       const res = await getRolesList(this.page)
-      console.log(res)
       this.roles = res.rows
       this.total = res.total
     },
@@ -269,31 +250,44 @@ export default {
         description: ''
       }
     },
+    // 获取公司信息请求
     async loadcompanyAll() {
       const res = await companyAll()
       console.log(res)
       this.formLabelAlign = res[0]
     },
+    // 添加权限
     async onSetPermission(row) {
-      this.roleId = row.id
+      // 对话框名字赋值
       this.setPermissionTitle = '为[' + row.name + ']分配权限'
-      this.setPermissionDialoge = true
-      this.permissionList = listTree('0', await getPermissionList())
+      this.setPermissionDialog = true
+      // 获取权限列表并处理数据
+      this.PermissionList = listTree('0', await getPermissionList())
+      console.log(row)
+      // 默认选中赋值
       this.defaultKeys = (await getRolesById(row.id)).permIds
+      this.PermissionId = row.id
     },
-    async onSetPermissionSave() {
-      const permissionIds = this.$refs.setPermissionTree.getCheckedKeys()
-      if (!permissionIds.length) return this.$message.error('请选择必要的权限')
-      await setPermissionToRole({
-        id: this.roleId,
-        permIds: permissionIds
-      })
-      this.$message('分配成功')
-      this.setPermissionDialoge = false
-    },
-    onClose() {
+    // 分配权限弹窗关闭
+    onPermissionclose() {
       this.defaultKeys = []
+      this.setPermissionDialog = false
+    },
+    // 分配权限弹窗确定
+    async setPermissionSave() {
+      // 选中的id数组，tree组件的方法getCheckedKeys()
+      const PermissioIds = this.$refs.SetPermissionTree.getCheckedKeys()
+      // 判断有没有选中数据，没有选中给提示，选中发请求
+      if (!PermissioIds.length) return this.$message.error('请分配权限')
+      // 更新权限请求
+      await PermissAssignPrem({
+        id: this.PermissionId,
+        permIds: PermissioIds
+      })
+      this.$message.success('分配成功')
+      this.onPermissionclose()
     }
+
   }
 }
 </script>

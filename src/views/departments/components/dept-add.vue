@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import { getDepartment, getIncreased, updateDepartment } from '@/api/department.js'
+import { getDepartment, getIncreased, updateDepartment } from '@/api/departments.js'
 import { getEmployeesSimpleList } from '@/api/employees.js'
 export default {
   props: {

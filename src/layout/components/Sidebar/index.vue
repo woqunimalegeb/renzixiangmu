@@ -31,6 +31,7 @@ export default {
       'sidebar'
     ]),
     routes() {
+      // 展示侧边栏的路由集合
       return this.$store.state.permission.routes
     },
     activeMenu() {

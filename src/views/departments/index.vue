@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import { getDepartment } from '@/api/department.js'
+import { getDepartment } from '@/api/departments.js'
 import { listTree } from '@/utils'
 import DeptOption from './components/dept-option.vue'
 import AddDept from './components/dept-add.vue'

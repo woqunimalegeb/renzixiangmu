@@ -59,7 +59,7 @@
 
 <script>
 import { addEmployees } from '@/api/employees.js'
-import { getDepartment } from '@/api/department.js'
+import { getDepartment } from '@/api/departments.js'
 import { listTree } from '@/utils'
 import hireType from '@/api/constant/employees.js'
 export default {

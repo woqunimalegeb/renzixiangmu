@@ -68,3 +68,16 @@ export const companyAll = () => {
     method: 'GET'
   })
 }
+
+/**
+ * 给角色分配权限
+ * @param {*} params
+ * @returns
+ */
+export const PermissAssignPrem = (data) => {
+  return request({
+    url: '/sys/role/assignPrem',
+    method: 'PUT',
+    data
+  })
+}

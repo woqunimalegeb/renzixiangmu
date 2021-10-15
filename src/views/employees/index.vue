@@ -54,10 +54,10 @@
             <template v-slot="{row}">
               <el-button :disabled="checkPermission(points.pointUserUpdate)" type="text" size="small" @click="$router.push('/employees/'+row.id)">查看</el-button>
               <el-button type="text" size="small">转正</el-button>
-              <el-button :disabled="checkPermission(points.pointUserSetJob)" type="text" size="small">调岗</el-button>
+              <el-button type="text" size="small" :disabled="checkPermission(points.pointUser)">调岗</el-button>
               <el-button type="text" size="small">离职</el-button>
               <el-button type="text" size="small" @click="onClickRole(row.id)">角色</el-button>
-              <el-button :disabled="checkPermission(point.pointDelete)" type="text" size="small" @click="onClickDel(row)">删除</el-button>
+              <el-button :disabled="checkPermission(points.pointUserDelete)" type="text" size="small" @click="onClickDel(row)">删除</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -97,7 +97,8 @@ import AddEmployees from './components/AddEmployees.vue'
 import { formatHireType } from '@/filters'
 import QRCode from 'qrcode'
 import AssignRole from './components/assignRole.vue'
-import { mapGetters } from '@/store/getters'
+import { mapGetters } from 'vuex'
+
 export default {
   name: 'Employees',
   components: {
@@ -118,20 +119,16 @@ export default {
       employeesId: ''// 员工Id
     }
   },
-
-  created() {
-    this.loadEmployeesList()
-  },
   computed: {
     ...mapGetters(['points', 'roles'])
+  },
+  created() {
+    this.loadEmployeesList()
   },
   mounted() {
 
   },
   methods: {
-    checkPermission(val) {
-      return !this.roles.point.includes(val)
-    },
     // 获取员工信息
     async loadEmployeesList() {
       const res = await getEmployeesList(this.tablePage)
@@ -212,10 +209,14 @@ export default {
         })
       })
     },
+    // 点击角色
     onClickRole(rowId) {
       this.setRoleDialog = true
       // 保存用户Id,子组件发请求参数
       this.employeesId = rowId
+    },
+    checkPermission(val) {
+      return !this.roles.points.includes(val)
     }
   }
 }

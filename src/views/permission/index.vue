@@ -21,7 +21,7 @@
         <el-table-column label="描述" prop="description" />
         <el-table-column label="操作">
           <template v-slot="{row}">
-            <el-button v-if="row.type===1" type="text" @click="onClickAdd(2,row.id)">添加</el-button>
+            <el-button v-if="row.type===1" :disabled="checkPermission(points.pointPermissionAdd)" type="text" @click="onClickAdd(2,row.id)">添加</el-button>
             <el-button type="text" @click="onEdit(row.id)">编辑</el-button>
             <el-button type="text" @click="onDelete(row.id)">删除</el-button>
           </template>
@@ -69,10 +69,10 @@
 <script>
 import { getPermissionList, addPermission, getPermissionInfo, editPermissionInfo, PermissionDelete } from '@/api/permission.js'
 import { listTree } from '@/utils'
-import perMission from '@/mixins/permission'
+import permissionMix from '@/mixins/permission.js'
 export default {
   name: 'Permission',
-  mixins: [perMission],
+  mixins: [permissionMix],
   data() {
     return {
       title: false,

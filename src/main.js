@@ -16,9 +16,10 @@ import '@/icons' // icon
 import '@/permission' // permission control
 
 import '@/derectives'
-
+import i18n from '@/i18n'
 // 引入全局的复用组件
 import HrsaasUI from '@/components'
+
 // 注册全局的复用组件
 Vue.use(HrsaasUI)
 
@@ -45,5 +46,6 @@ new Vue({
   el: '#app',
   router,
   store,
+  i18n,
   render: h => h(App)
 })

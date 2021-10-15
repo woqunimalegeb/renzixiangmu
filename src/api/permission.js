@@ -55,11 +55,3 @@ export function PermissionDelete(id) {
     method: 'DELETE'
   })
 }
-
-export function setPermissionToRole(data) {
-  return request({
-    url: '/sys/role/assignPrem',
-    method: 'PUT',
-    data
-  })
-}

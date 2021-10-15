@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import { delDeptById } from '@/api/department.js'
+import { delDeptById } from '@/api/departments.js'
 export default {
   props: {
     row: {

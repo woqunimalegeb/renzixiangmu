@@ -1,6 +1,7 @@
 <template>
   <div class="navbar">
     <!-- 头部导航栏 -->
+
     <hamburger :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" />
 
     <div class="app-breadcrumb">
@@ -12,6 +13,7 @@
     <breadcrumb class="breadcrumb-container" /> -->
 
     <div class="right-menu">
+      <span><ScreenFull /></span>
       <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
           <!-- 定义自定义事件 v-imgError-->
@@ -119,7 +121,7 @@ export default {
     float: right;
     height: 100%;
     line-height: 50px;
-
+display: flex;
     &:focus {
       outline: none;
     }
