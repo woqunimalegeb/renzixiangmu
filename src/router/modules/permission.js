@@ -4,7 +4,7 @@ export default {
   component: Layout,
   name: 'permissions',
   children: [
-    {
+    { name: 'permissions',
       path: '', // 默认子路由
       component: () => import('@/views/permission'),
       // 存储路由信息

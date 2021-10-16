@@ -6,6 +6,7 @@
     <div class="main-container">
       <div :class="{'fixed-header':fixedHeader}">
         <navbar />
+        <TagsView v-if="tagsView" />
       </div>
       <app-main />
     </div>
@@ -13,7 +14,7 @@
 </template>
 
 <script>
-import { Navbar, Sidebar, AppMain } from './components'
+import { Navbar, Sidebar, AppMain, TagsView } from './components'
 import ResizeMixin from './mixin/ResizeHandler'
 
 export default {
@@ -21,7 +22,8 @@ export default {
   components: {
     Navbar,
     Sidebar,
-    AppMain
+    AppMain,
+    TagsView
   },
   mixins: [ResizeMixin],
   computed: {
@@ -41,12 +43,16 @@ export default {
         withoutAnimation: this.sidebar.withoutAnimation,
         mobile: this.device === 'mobile'
       }
+    },
+    tagsView() {
+      return this.$store.state.settings.TagsView
     }
   },
   methods: {
     handleClickOutside() {
       this.$store.dispatch('app/closeSideBar', { withoutAnimation: false })
     }
+
   }
 }
 </script>
@@ -76,11 +82,11 @@ export default {
   }
 
   .fixed-header {
-    position: fixed;
+position: fixed;
     top: 0;
     right: 0;
     z-index: 9;
-    width: calc(100% - #{$sideBarWidth});
+width: calc(100% - #{$sideBarWidth});
     transition: width 0.28s;
   }
 

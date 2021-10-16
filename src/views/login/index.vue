@@ -16,7 +16,7 @@
         <el-input
           ref="mobile"
           v-model="loginForm.mobile"
-          placeholder="请输入手机号"
+          :placeholder="$t('login.name')"
           name="mobile"
           type="text"
           tabindex="1"
@@ -33,7 +33,7 @@
           ref="password"
           v-model="loginForm.password"
           :type="passwordType"
-          placeholder="请输入密码"
+          :placeholder="$t('login.password')"
           name="password"
           tabindex="2"
           auto-complete="on"
@@ -44,8 +44,8 @@
         </span>
       </el-form-item>
 
-      <el-button class="loginBtn" :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">登录</el-button>
-
+      <el-button class="loginBtn" :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">{{ $t ('login.login') }}</el-button>
+      <SelectLang />
       <div class="tips">
         <span>还没有账号立即注册？</span>
         <span> 账号：1380000000(2-4)</span>

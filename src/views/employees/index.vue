@@ -144,8 +144,8 @@ export default {
     // 点击删除,通过插槽拿到当前点击数据，传值
     onClickDel(row) {
       this.$confirm('此操作将永久删除该员工, 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+        confirmButtonText: '',
+        cancelButtonText: '',
         type: 'warning'
       }).then(async() => {
         await delEmployee(row.id)

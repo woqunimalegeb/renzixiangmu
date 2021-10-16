@@ -49,6 +49,7 @@ const actions = {
     console.log(res)
     // 按钮标识权限大写转小写
     res.roles.points.forEach((item, index) => {
+      if (typeof item !== 'string') return
       res.roles.points[index] = item.toLocaleLowerCase()
     })
     // 根据获取用户信息请求来获取用户详细信息请求
